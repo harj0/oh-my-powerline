@@ -24,7 +24,7 @@ Note: Add preview.
 ## Powerline
 [Powerline](https://github.com/Lokaltog/powerline) is an awesome tool written in python that produces very attractive prompts and statusbars for bash, zsh, ipython, tmux, vim and other tools through the use of "patched" unicode fonts which bind symbols to values in the unicode private use area (E0A0-E0A2, E0B0-E0B3). The primary need for these symbols is to define arrows the size of the line height for producing the effect seen [here](https://powerline.readthedocs.org/en/latest/introduction.html#screenshots). Other vanity symbols with special purposes are also defined. This technique has been adopted by several other tools (vim-airline, for example).  This is the technique used in this theme.
 
-Note: While powerline is an amazing tool, I didn't have the time to put in the effort to learn the internals enough to debug issue - and I have had several performance problems with it that I was unable to resolve.  I decided to create a similar tool for zsh only that would be very fast, easy to extend, easy to configure and easy to debug - hence [oh-my-powerline](https://github.com/nfarrar/oh-my-powerline).
+*Note: While powerline is an amazing tool, I didn't have the time to put in the effort to learn the internals enough to debug issue - and I have had several performance problems with it that I was unable to resolve.  I decided to create a similar tool for zsh only that would be very fast, easy to extend, easy to configure and easy to debug - hence [oh-my-powerline](https://github.com/nfarrar/oh-my-powerline).*
 
 The unicode values for the powerline symbols are:
 
@@ -168,7 +168,7 @@ I referenced a lot of information while figuring out a working method for font-p
 
 ### Themes
 
-*Note: Much inspiration was taken from the following themes:
+*Note: Much inspiration was taken from the following themes:*
 
 + [agnoster theme for oh-my-zsh](https://gist.github.com/agnoster/3712874)
 + [oh-my-zsh-powerline-theme](https://github.com/jeremyFreeAgent/oh-my-zsh-powerline-theme)
@@ -182,7 +182,7 @@ I referenced a lot of information while figuring out a working method for font-p
 
 ### LICENSE
 
-oh-my-powerline a native zsh-powerline them for use with oh-my-zsh  
+*oh-my-powerline a native zsh-powerline them for use with oh-my-zsh  
 Copyright (C) <2014> Nathan Farrar  
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -190,4 +190,4 @@ This program is free software: you can redistribute it and/or modify it under th
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.*
