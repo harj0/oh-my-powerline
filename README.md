@@ -104,7 +104,7 @@ The following instructions explain how I configure [iTerm2](http://www.iterm2.co
     TRANSPARENCY: iTerm2 ➟ Profiles ➟ Window ➟ Transparency ➟ Opaque
 
 Notes:
-+ If you installed the patched font with my instructions above, your patched font will retain it's original name. If you installed a prepatched font or utilized another method, your font may be named "<Font Name> for Powerline".
++ If you installed the patched font with the instructions above, your patched font will retain it's original name. If you installed a prepatched font or utilized another method, your font may be named "<Font Name> for Powerline".
 + You may need to adjust the vertical line height for the fonts (in iTerm2) to ensure the segment characters line up correctly.
 + The color contrast setting in iTerm2 has an impact on the way the powerline prompt is rendered. Unfortunately, there is not yet a setting to disable this. To make my prompt render correctly, I had to disable the color contrast completely - otherwise the segment characters will be rendered in a slightly offset color.
 + When iTerm2 renders transparency, it applies the transparency to the terminal text as well. As far as I can tell there is not a way to disable this. Because of the way the prompt is drawn, this creates a very ugly prompt (similar to how the contrast functions). This unfortunately (at current) means transparency must be disabled as well.
@@ -182,3 +182,12 @@ I referenced a lot of information while figuring out a working method for font-p
 
 ### LICENSE
 
+oh-my-powerline a native zsh-powerline them for use with oh-my-zsh  
+Copyright (C) <2014> Nathan Farrar  
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.

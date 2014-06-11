@@ -1,29 +1,20 @@
-# META ----------------------------------------------------------------------- ↩
+# LICENSE -------------------------------------------------------------------- ↩
 
+#   oh-my-powerline a native zsh-powerline them for use with oh-my-zsh
+#   Copyright (C) <2014> Nathan Farrar
 
-# @Author:  Nathan Farrar
-# @Email:   nathan.farrar@gmail.com
-# @Website: http://nfarrar.io/
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
 
-# Zsh-native powerline port for use with oh-my-zsh and antigen. Inspiration
-# taken from http://j.mp/powerlineomz, http://j.mp/agnosteromz, and
-# http://j.mp/wedisagreeomz.
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
 
-# The design is intended to be well documented, easy to understand, easy to
-# improve, and readily configurable (without rewrite the core of the theme).
-
-# The theme is intended to be compatible with oh-my-zsh. I highly recommend
-# using antigen (http://j.mp/antigen) to mangage your zsh "bundles".
-
-
-# NOTES ---------------------------------------------------------------------- ↩
-
-
-# persistant dirstack:  http://hints.macworld.com/article.php?story=20050806202859392
-# autojump:             https://github.com/joelthelion/autojump
-#                       http://www.harveyxia.com/hack-your-workflow/
-#                       https://github.com/hchbaw/opp.zsh
-#                       http://beatworm.co.uk/blog/computers/cool-shell-prompts/
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 # UNICODE SYMBOLS ------------------------------------------ POWERLINE SYMBOLS ↩
