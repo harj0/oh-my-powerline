@@ -66,33 +66,28 @@ Several methods can be used to setup a patched font. I prefer the following meth
 
     # clone powerline-fontpatcher
     git clone $plfp_git_url $plfp_src_dir
-    cd $plfpsrc && python setup.py install && cd
-
-    # export the path to the powerline symbols sfd file
-    export POWERLINE_SYMBOLS_SFD=~/.local/src/powerline-fontpatcher/fonts/powerline-symbols.sfd
 
 Note: Each time you use powerline-fontpatcher, you'll need the patch to the SFD file. If you intend to install multiple fonts you may want to export this path in your zsh configuration.
 
 With fontpatcher installed, we need to patch and install a font. This example uses the adobe source code pro font.
 
-    # pass a url to a zip archive containing .TTF font files to this function to
-    # automatically patch and install the font
-    function omzpl_patch_font () {
-        local urlsrc=$1
-        local omzpl_tmp=/tmp/omzpl
-        local prepatched=$omzpl_tmp/prepatched
-        local patched=$omzpl_tmp/patched
+    # pass the url to a zip file containing a set of ttf fonts as $1
+    function ompl_patch_font () {
+        [[ -n $1 ]] && local url=$1 || return 1
 
-        mkdir -p $prepatched
-        unzip =( curl -L $urlsrc ) -d $prepatched
+        local fontpatcher=~/.local/src/powerline-fontpatcher/scripts/powerline-fontpatcher
+        local powerline_symbols=~/.local/src/powerline-fontpatcher/fonts/powerline-symbols.sfd
 
-        mkdir -p $patched && cd $patched
-        find $prepatched -name \*.ttf -exec powerline-fontpatcher --source-font=$POWERLINE_SYMBOLS_SFD --no-rename {} \;
+        mkdir -p /tmp/ompl/prepatched
+        unzip =( curl -L $url ) -d /tmp/ompl/prepatched
+
+        mkdir -p /tmp/ompl/patched && cd /tmp/ompl/prepatched
+        find /tmp/ompl/prepatched -name \*.ttf -exec $fontpatcher --source-font=$powerline_symbols --no-rename {} \;
         mv *.ttf /Library/Fonts && cd && rm -rf $omzpl_tmp
     }
 
     # patch & install the source code pro font
-    omzpl_patch_font http://sourceforge.net/projects/sourcecodepro.adobe/files/SourceCodePro_FontsOnly-1.017.zip
+    ompl_patch_font "http://sourceforge.net/projects/sourcecodepro.adobe/files/SourceCodePro_FontsOnly-1.017.zip"
 
 ### Terminal Configuration
 Once you have installed a patched font, you'll need to configure your terminal to use the patched font.
