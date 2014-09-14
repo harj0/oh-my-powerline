@@ -1,276 +1,361 @@
-# LICENSE -------------------------------------------------------------------- ↩
-
-#   oh-my-powerline a native zsh-powerline them for use with oh-my-zsh
-#   Copyright (C) <2014> Nathan Farrar
-
-#   This program is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU General Public License as published by
-#   the Free Software Foundation, either version 3 of the License, or
-#   (at your option) any later version.
-
-#   This program is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU General Public License for more details.
-
-#   You should have received a copy of the GNU General Public License
-#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# @Author:  Nathan Farrar
+# @Email:   nathan.farrar@gmail.com
+# @Website: http://crunk.io/
 
 
-# UNICODE SYMBOLS ------------------------------------------ POWERLINE SYMBOLS ↩
+# TODO: Replace oh-my-zsh plugins with native code.
+# TODO: Add support for PS4 & debugging prompt.
 
 
-OMPL_SYMBOL_POWERLINE_VERSION_CONTROL_BRANCH=''
-OMPL_SYMBOL_POWERLINE_LINE=''
-OMPL_SYMBOL_POWERLINE_PADLOCK=''
-OMPL_SYMBOL_POWERLINE_ARROW_RIGHT_SOLID=''
-OMPL_SYMBOL_POWERLINE_ARROW_RIGHT_THIN=''
-OMPL_SYMBOL_POWERLINE_ARROW_LEFT_SOLID=''
-OMPL_SYMBOL_POWERLINE_ARROW_LEFT_THIN=''
+# ZSH Settings
+# ------------
+# Enable zsh color bindings.
+autoload -U colors && colors
+
+# Enable hooks (chpwd, periodic, precmd, preexec, zshaddhistory, zshexit).
+#   precmd  - Executed before each prompt.
+#   preexec - Executed just after a command has been read and is about to be executed.
+autoload -U add-zsh-hook
+
+# Enable command substitutions & parameter expansions.
+setopt prompt_subst
 
 
-# UNICODE SYMBOLS ------------------------------------------- STANDARD SYMBOLS ↩
+# Globals
+# -------
+# NOTE: Why does using declare to define the integer values break them?
+
+declare -A SYMBOLS
+declare -a SEGMENTS
+
+PROMPT_ID=0
+SEG_COUNT=0
+CURRENT_BG=''
+
+USERNAME=''
+HOSTNAME=''
+HISTLINE=0
+JOBCOUNT=0
+RETVAL=0
+TERMWIDTH=0
 
 
-OMPL_SYMBOL_ARROW_LEFT='←'
-OMPL_SYMBOL_ARROW_UP='↑'
-OMPL_SYMBOL_ARROW_RIGHT='→'
-OMPL_SYMBOL_ARROW_DOWN='↓'
+# Unicode Symbols
+# ---------------
 
-OMPL_SYMBOL_COMMAND='⌘'
-OMPL_SYMBOL_OPTION='⌥' 
-OMPL_SYMBOL_CONTROL='⌃' 
-OMPL_SYMBOL_SHIFT='⇧' 
-OMPL_SYMBOL_CAPSLOCK='⇪' 
-OMPL_SYMBOL_TAB='⇥' 
-OMPL_SYMBOL_TAB_BACK='⇤' 
-OMPL_SYMBOL_RETURN='↩' 
-OMPL_SYMBOL_ENTER='⌤' 
-OMPL_SYMBOL_DELETE='⌫' 
-OMPL_SYMBOL_DELETE_FORWARD='⌦' 
-OMPL_SYMBOL_PAGE_UP='⇞' 
-OMPL_SYMBOL_PAGE_DOWN='⇟' 
-OMPL_SYMBOL_HOME='↖' 
-OMPL_SYMBOL_END='↘' 
-OMPL_SYMBOL_CLEAR='⌧' 
-OMPL_SYMBOL_SPACE='␣' 
-OMPL_SYMBOL_ESCAPE='⎋' 
-OMPL_SYMBOL_EJECT='⏏'
+SYMBOLS[BRANCH]=''
+SYMBOLS[LINE]=''
+SYMBOLS[PADLOCK]=''
+SYMBOLS[LSEP]=''
+SYMBOLS[LSEP_ALT]=''
+SYMBOLS[RSEP]=''
+SYMBOLS[RSEP_ALT]=''
 
-OMPL_SYMBOL_APPLE=''
-OMPL_SYMBOL_FLAG='⚑'
-OMPL_SYMOBL_DOT='✹'
-OMPL_SYMBOL_YINGYANG='☯'
-OMPL_SYMBOL_BIOHAZARD='☢'
-OMPL_SYMBOL_STAR='★'
-OMPL_SYMBOL_CHECK='✔'
-OMPL_SYMBOL_X='✘'
-OMPL_SYMBOL_FILE='⨍'
-OMPL_SYMBOL_SPADE='♠'
-OMPL_SYMBOL_CLUB='♣'
-OMPL_SYMBOL_HEART='❤'
-OMPL_SYMBOL_DIAMOND='♦'
-OMPL_SYMBOL_SMILE='☺'
-OMPL_SYMBOL_FROWN='☹'
+SYMBOLS[SMILE]='☺'
+SYMBOLS[FROWN]='☹'
+SYMBOLS[VENV]='λ'
 
-OMPL_SYMBOL_REPO_GIT='Ⓖ'
-OMPL_SYMBOL_REPO_MERCURIAL='Ⓜ'
-OMPL_SYMBOL_REPO_SUBVERSION='Ⓢ'
-OMPL_SYMBOL_REPO_CVS='Ⓒ'
-OMPL_SYMBOL_REPO_BAZARR='Ⓑ'
-OMPL_SYMBOL_REPO_VCS='Ⓥ'
+SYMBOLS[APPLE]=''
+SYMBOLS[FLAG]='⚑'
+SYMBOLS[DOT]='✹'
+SYMBOLS[YINGYANG]='☯'
+SYMBOLS[BIOHAZARD]='☢'
+SYMBOLS[STAR]='★'
+SYMBOLS[CHECK]='✔'
+SYMBOLS[XMARK]='✘'
+SYMBOLS[FILE]='⨍'
 
+SYMBOLS[SPADE]='♠'
+SYMBOLS[CLUB]='♣'
+SYMBOLS[HEARTS]='❤'
+SYMBOLS[DIAMOND]='♦'
 
-# CONFIGURATION ---------------------------------------------- SYMBOL BINDINGS ↩
+SYMBOLS[ALEFT]='←'
+SYMBOLS[AUP]='↑'
+SYMBOLS[ARIGHT]='→'
+SYMBOLS[ADOWN]='↓'
 
+SYMBOLS[CMD]='⌘'
+SYMBOLS[OPT]='⌥' 
+SYMBOLS[CTRL]='⌃' 
+SYMBOLS[SHIFT]='⇧' 
+SYMBOLS[CAPSLOCK]='⇪' 
+SYMBOLS[TAB]='⇥' 
+SYMBOLS[TABSHIFT]='⇤' 
+SYMBOLS[RETURN]='↩' 
+SYMBOLS[ENTER]='⌤' 
+SYMBOLS[DEL]='⌫' 
+SYMBOLS[DELFOR]='⌦' 
+SYMBOLS[PUP]='⇞' 
+SYMBOLS[PDOWN]='⇟' 
+SYMBOLS[HOME]='↖' 
+SYMBOLS[END]='↘' 
+SYMBOLS[CLEAR]='⌧' 
+SYMBOLS[SPACE]='␣' 
+SYMBOLS[POWER]='⎋' 
+SYMBOLS[EJECT]='⏏'
 
-
-# CONFIGURATION ---------------------------------------------- SYMBOL BINDINGS ↩
-
-
-# PROMPT SEGMENT ------------------------------------------------ SHELL STATUS ↩
-
-
-# Displays a "smiley" in green or "frowney" in red, depending on the exit
-# status of the last executed command.
-# This seems to have broken when I added the virtualenv segment. Needs to be
-# fixed. Also will probably add a history line indicator for easily repeating
-# commands.
-
-OMPL_RETURN_VALUE=%?
-OMPL_NUM_JOBS=%j
-OMPL_HIST_NUM=%h
-
-function ompl_segment_status() {
-    local bg_color='green'
+SYMBOLS[GIT]='Ⓖ'
+SYMBOLS[MERCURIAL]='Ⓜ'
+SYMBOLS[SVN]='Ⓢ'
+SYMBOLS[CVS]='Ⓒ'
+SYMBOLS[BZR]='Ⓑ'
+SYMBOLS[VCS]='Ⓥ'
 
 
+# Settings
+# --------
+DEBUG=1
+LSEP=$SYMBOLS[LSEP]
+RSEP=$SYMBOLS[RSEP]
 
-    if [[ $OMPL_RETURN_VALUE == 0 ]]; then
-        ompl_build_segment " ☺ " 'green' 'black'
-    else
-        ompl_build_segment " ☹ " 'red' 'black'
+
+# Debug Messages
+# --------------
+# Display debugging messages if enabled. Set DEBUG=1 to enable them.
+
+function debug() {
+    [[ $DEBUG == 1 ]] && echo "DEBUG: $1" 1>&2;
+}
+
+
+# OMPL Precmd
+# -----------
+# Commands to be executed prior to building the prompt.
+# Immediately set the return value of the last executed command.
+
+function precmd() {
+    RETVAL=$?
+    (( TERMWIDTH = ${COLUMNS} - 1 ))
+}
+add-zsh-hook precmd precmd
+
+
+# Test Segment
+# ------------
+# Generate a simple segment for testing purposes.
+# The colors module stores the color bindings in an indexed array, therefore
+# we can select a random color using: $((RANDOM % 8)).
+
+function segment_test() {
+    [ -n "$1" ] && fgc=$1 || fgc=$(shuf -i 1-7 -n 1)
+    add_segment $(shuf -i 1000-9999 -n 1) $fgc 'black'
+}
+
+
+# Error Segment
+# -------------
+# If the previous command failed, the return status is displayed in a red 'error' segment.
+# $RETVAL is set immediately in ompl_precmd (prior to the prompt being built).
+function segment_error() {
+    if [[ $RETVAL -ne 0 ]]; then
+        add_segment "$RETVAL" 'red' 'black'
     fi
 }
 
 
-# PROMPT SEGMENT ----------------------------------------- SESSION INFORMATION ↩
+# Context Segment
+# ---------------
+# If we're using a local session, add the username & hostname to the context
+# segment. If we're in a remote session, add the username, ip & port.
 
+function segment_context() {
+    local user=`whoami`
 
-# Displays useful information about the current session.
-function ompl_segment_session() {
-
-    if [[ -n $SSH_CLIENT ]]; then
-        ompl_build_segment " %n@%m " 'yellow' 'black'
+    if [[ -z "$SSH_CLIENT" ]]; then
+        add_segment "%n@%m" 'yellow' 'black'
     else
-        ompl_build_segment " %n@%m:%l " 'yellow' 'black'
+        local ip=$(echo $SSH_CLIENT | cut -f1 -d ' ')
+        local port=$(echo $SSH_CLIENT | cut -f3 -d ' ')
+
+        add_segment "%n@$ip:$port" 'yellow' 'black'
     fi
 }
 
 
-# PROMPT SEGMENT ---------------------------------------------------- DIRSTACK ↩
+# Path Segment
+# ------------
+# Display the current path.
 
-
-# Displays the directory path.
-function ompl_segment_dirstack() {
-    ompl_build_segment " %~ " 'blue' 'black'
+function segment_path() {
+    add_segment "%~" 'blue' 'black'
 }
 
 
-# PROMPT SEGMENT ------------------------------------------------- DATE & TIME ↩
+# Version Control Segment
+# -----------------------
+# TODO: Add version control segment features.
 
+function segment_vc() {
 
-function ompl_segment_datetime() {
-    ompl_build_segment " %D{%Y-%m-%d %H:%M:%S} " 'magenta' 'black'
-}
-
-function segment_git() {
-    ompl_build_segment "$(git_prompt_info)" 'cyan' 'black'
 }
 
 
-# PROMPT SEGMENT --------------------------------------------------------- GIT ↩
+# ZSH_THEME_GIT_PROMPT_CLEAN=$OMPL_SYMBOL_CHECK
+# ZSH_THEME_GIT_PROMPT_DIRTY=$OMPL_SYMBOL_X
+# ZSH_THEME_GIT_PROMPT_PREFIX="$OMPL_SYMBOL_POWERLINE_VERSION_CONTROL_BRANCH "
+# ZSH_THEME_GIT_PROMPT_SUFFIX=" "
+# function ompl_segment_git() {
+#     build_segment "$(git_prompt_info)" 'cyan' 'black'
+# }
 
 
-ZSH_THEME_GIT_PROMPT_CLEAN=$OMPL_SYMBOL_CHECK
-ZSH_THEME_GIT_PROMPT_DIRTY=$OMPL_SYMBOL_X
-ZSH_THEME_GIT_PROMPT_PREFIX="$OMPL_SYMBOL_POWERLINE_VERSION_CONTROL_BRANCH "
-ZSH_THEME_GIT_PROMPT_SUFFIX=" "
+# Timestamp Segment
+# -----------------
+# Add a timestamp segment.
+# TODO: Move pattern to config section.
 
-function ompl_segment_git() {
-    ompl_build_segment "$(git_prompt_info)" 'cyan' 'black'
+function segment_timestamp() {
+    # add_segment 'timestamp' 'magenta' 'black'
+    add_segment '%D{%Y-%m-%d %H:%M:%S}' 'magenta' 'black'
 }
 
 
-# PROMPT SEGMENT -------------------------------------------------- VIRTUALENV ↩
-
+# Virtualenv Segment
+# ------------------
+# TODO: Add virtualenv segment.
 
 # Requires the virtualenv plugin by Tony Seek. To install with antigen add the
 # following line to your .zshrc:
 # bundle antigen bundle tonyseek/oh-my-zsh-virtualenv-prompt
+# export ZSH_THEME_VIRTUAL_ENV_PROMPT_PREFIX=$OMPL_SYMBOL_FILE
+# export ZSH_THEME_VIRTUAL_ENV_PROMPT_SUFFIX=" "
 
-export ZSH_THEME_VIRTUAL_ENV_PROMPT_PREFIX=$OMPL_SYMBOL_FILE
-export ZSH_THEME_VIRTUAL_ENV_PROMPT_SUFFIX=" "
+# function _segment_virtualenv() {
+#     if [[ -n $VIRTUAL_ENV ]]; then
+#         build_segment "$(virtualenv_prompt_info)" 'magenta' 'black'
+#     fi
+# }
 
-function ompl_segment_virtualenv() {
-    if [[ -n $VIRTUAL_ENV ]]; then
-        ompl_build_segment "$(virtualenv_prompt_info)" 'magenta' 'black'
+
+# Add Segment
+# -----------
+# Adds a newline delimited string containing the commands to be executed with
+# the corresponding bg & fg colors to the segments array. This allows for more
+# much clearer segment drawing than the method utilized in the agnoster (and
+# other powerline clone) themes. Segment content cannot contain newlines.
+
+function add_segment() {
+    local segment="$(echo -en "$1;$2;$3")"
+    local index=${#SEGMENTS[@]}
+
+    SEGMENTS+=$segment
+}
+
+
+# Draw Segments
+# -------------
+# Draw the segments in the $SEGMENT array.
+
+function draw_segments() {
+    local prompt_id=$1
+    local num_segments=${#SEGMENTS[@]}
+
+    # Iterate over the segments in the array by index.
+    for (( segcnt = 1; segcnt <= $num_segments; segcnt++ )) do
+        # debug "segment $prompt_id $segcnt"
+
+        # Split the current segment into a ';' delimited array.
+        segparts=(${(s:;:)SEGMENTS[$segcnt]})
+        #segparts=(`echo $SEGMENTS[$segcnt] | tr ";" "\n"`)
+
+        # Assemble the segment string.
+        segment="%K{$segparts[2]}%F{$segparts[3]} $segparts[1] "
+
+        # The separator is always written after the content for the left prompt.
+        if [[ $prompt_id -eq 0 ]]; then
+
+            # If we're drawing the last segment on the left, set the background
+            # to the default, otherwise, use the content's background from the
+            # next segment.
+            if [[ $segcnt -eq $num_segments ]]; then
+                segment="$segment%K{0}"
+            else
+                (( nsegcnt = $segcnt + 1 ))
+                nsegparts=(${(s:;:)SEGMENTS[$nsegcnt]})
+                #nsegparts=(`echo $SEGMENTS[$nsegcnt] | tr ";" "\n"`)
+                segment="$segment%K{$nsegparts[2]}"
+            fi
+
+            # The separators foreground color needs to match the background color
+            # for the current segment's content.
+            segment="$segment%F{$segparts[2]}"
+
+            # Add the separator to the end of the segment.
+            segment="$segment$LSEP"
+
+        # The separator is always written before the content for the right prompt.
+        elif [[ $prompt_id == 1 ]]; then
+
+            # Add the separator to the front of the segment.
+            segment="$RSEP$segment"
+
+            # If we're drawing the first segment on the right-hand side, set the
+            # segment separators background color to the default. Otherwise, use
+            # the background color of the previous segment's content.
+            if [[ $segcnt -eq 0 ]]; then
+                segment="%K{0}$segment"
+            else
+                (( psegcnt = $segcnt - 1 ))
+                psegparts=(${(s:;:)SEGMENTS[$psegcnt]})
+                #psegparts=(`echo $SEGMENTS[$psegcnt] | tr ";" "\n"`)
+                segment="%K{$psegparts[2]}$segment"
+            fi
+
+            # The separator's foreground color needs to match the background color
+            # of the current segment's content.
+            segment="%F{$segparts[2]}$segment"
+
+        fi
+
+        # And finally draw the assembled segment.
+        echo -en "$segment"
+    done
+}
+
+
+# Initialize Prompt
+# -----------------
+# Build & draw the prompt. Takes one argument, the prompt_id
+# (0 = left prompt, 1 = right prompt).
+
+function init_prompt() {
+    # Initialize the prompt_id.
+    local prompt_id=$1
+
+    # Reset the segments array.
+    SEGMENTS=()
+
+    # Add segments for the left-hand prompt.
+    if [[ $prompt_id -eq 0 ]]; then
+        # debug "Adding left-prompt segments"
+        # segment_test red
+        # segment_test blue
+        # segment_test yellow
+        # segment_test green
+
+        segment_error
+        segment_context
+        segment_path
+        # segment_virtualenv
+
+    # Add segments for the right-hand prompt.
+    elif [[ $prompt_id -eq 1 ]]; then
+        # debug "Adding right-prompt segments"
+        # segment_test red
+        # segment_test blue
+        # segment_test yellow
+        # segment_test green
+
+        # segment_vc
+        segment_timestamp
     fi
+
+    # Draw the prompt segments.
+    draw_segments $prompt_id
 }
 
-
-# PROMPT SEGMENT ------------------------------------------------- SEGMENT CAP ↩
-
-
-# The last segment to be written can be explicitly terminated by appending the
-# 'terminate' paremeter to the call to build_segment. If the last is not always
-# written, then terminating would not occur. As a simple workaround, I cap
-# the prompt with an empty, white segment. I will probably fix this in the
-# future.
-
-function ompl_segment_cap() {
-    ompl_build_segment " " 'white' 'black' 'terminate'
-}
-
-
-# UTILITY ------------------------------------------------------ BUILD SEGMENT ↩
-
-
-# The build_segment function is the underlying workhorse for segment writing.
-# I looked closely at several mechanisms others have used for building
-# powerline segment writing algorithms and attempted to retain the optimzations
-# from the best while making it user friendly enough to be modified by others.
-
-OMPL_CONFIG_LEFT_SEPARATOR=$OMPL_SYMBOL_POWERLINE_ARROW_RIGHT_SOLID
-OMPL_CONFIG_RIGHT_SEPARATOR=$OMPL_SYMBOL_POWERLINE_ARROW_LEFT_SOLID
-
-# Usage: ompl_build_segement <content> <:bgcolor> <:fgcolor> <:terminate>
-function ompl_build_segment() {
-    local bg fg terminate
-    [[ -n $2 ]] && bg="%K{$2}" || bg="%k"
-    [[ -n $3 ]] && fg="%F{$3}" || fg="%f"
-    [[ -n $4 ]] && terminate='true' || terminate='false'
-
-    # track the segment count so separators can be drawn correctly
-    (( SEGMENT_COUNT = $SEGMENT_COUNT + 1 ))
-
-    # Draw the segment separator. For the left prompt - the seperator is not
-    # drawn for the first segment - and subsequent segments (excluding the
-    # last) draw the separator for the previous segment. The right prompt
-    # draws the separator for the current segment.
-
-    if [[ $OMPL_SEGMENT_ALIGN == 'left' && $SEGMENT_COUNT > 1 ]]; then
-        echo -en "%F{$OMPL_SEGMENT_PREBG}$bg$OMPL_CONFIG_LEFT_SEPARATOR"
-    elif [[ $OMPL_SEGMENT_ALIGN == 'right' && $SEGMENT_COUNT == 1 ]]; then
-        echo -en "%F{$2}%K{default}$OMPL_CONFIG_RIGHT_SEPARATOR"
-    fi
-
-    # Draw the segment content.
-    echo -en "$bg$fg$1"
-
-    # Terminate the left prompt by drawing a trailing segment symbol.
-    if [[ $OMPL_SEGMENT_ALIGN == 'left' && $terminate == 'true' ]]; then
-        echo -en "%F{$2}%K{%k}$OMPL_CONFIG_LEFT_SEPARATOR "
-    else
-        OMPL_SEGMENT_PREBG=$2
-    fi
-}
-
-
-# UTILITY ------------------------------------------------------- BUILD PROMPT ↩
-
-
-# Builds the left prompt.
-function ompl_build_prompt() {
-    OMPL_SEGEMENT_COUNT=0
-    OMPL_SEGMENT_ALIGN='left'
-    OMPL_SEGMENT_PREBG='default'
-
-    ompl_segment_status
-    ompl_segment_session
-    ompl_segment_dirstack
-    ompl_segment_virtualenv
-    ompl_segment_cap
-}
-
-
-# UTILITY ------------------------------------------------------ BUILD RPROMPT ↩
-
-
-# Builds the right prompt.
-function ompl_build_rprompt() {
-    OMPL_SEGEMENT_COUNT=0
-    OMPL_SEGMENT_ALIGN='right'
-    OMPL_SEGMENT_PREBG='default'
-
-    ompl_segment_git
-    ompl_segment_datetime
-}
-
-
-# FINAL ---------------------------------------------------------- SET PROMPTS ↩
-
-
-PROMPT='%{%f%b%k%}$(ompl_build_prompt)%{%f%b%k%}'
-RPROMPT='%{%f%b%k%}$(ompl_build_rprompt)%{%f%b%k%}'
-
+# PROMPT=$(build_prompt 0)
+# RPROMPT=$(build_prompt 1)
+PROMPT='%{%f%b%k%}$(init_prompt 0)%{%f%b%k%}'
+RPROMPT='%{%f%b%k%}$(init_prompt 1)%{%f%b%k%}'
