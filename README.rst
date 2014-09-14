@@ -7,6 +7,7 @@ About
 A zsh-native minimal implementation of `Powerline <https://github.com/Lokaltog/powerline>`_ for use with oh-my-zsh & antigen.
 
 Several existing prompts/themes were very helpful when working on this:
+
 - `agnoster                     <https://gist.github.com/agnoster/3712874>`_
 - `oh my zsh powerline theme    <https://github.com/jeremyFreeAgent/oh-my-zsh-powerline-theme>`_
 - `powerline                    <https://github.com/Lokaltog/powerline>`_
